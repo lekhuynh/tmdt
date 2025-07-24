@@ -1,0 +1,39 @@
+protected void Application_Start(object sender, EventArgs e)
+{
+    Application.Lock();
+    //Kiểm tra xem có file Dem.txt
+    //Nếu chưa có tạo file
+    if (!System.IO.File.Exists(Server.MapPath("~/Dem.txt")))
+        System.IO.File.WriteAllText(Server.MapPath("~/Dem.txt"), "0");
+    //Nếu đã có file Dem.txt, đọc số liệu người truy cập
+    Application["lblSoLuotTC"] =
+    int.Parse(System.IO.File.ReadAllText(Server.MapPath("~/Dem.txt")));
+    Application.UnLock();
+
+}
+
+protected void Session_Start(object sender, EventArgs e)
+{
+    Application["lblSoLuotTC"] =
+    (int)Application["lblSoLuotTC"] + 1;
+    //Ghixuốngfile
+    System.IO.File.WriteAllText(Server.MapPath("~/Dem.txt"),
+    Application["lblSoLuotTC"].ToString());
+    //Xử lý số người online
+    //Nếu chưa có thì gánl à 1, có rồi thì tăng 1
+    if (Application["lblSoLuotOnline"] == null)
+    {
+        Application["lblSoLuotOnline"] = 1;
+    }
+    else
+    {
+        Application["lblSoLuotOnline"] = (int)Application["lblSoLuotOnline"] + 1;
+    }
+}
+
+
+
+protected void Session_End(object sender, EventArgs e)
+{
+    Application["lblSoLuotOnline"] = (int)Application["lblSoLuotOnline"] - 1;
+}
